@@ -15,12 +15,21 @@ const MintPageWithNoSSR = dynamic(
   { ssr: false }
 );
 
+// Динамический импорт TokenInfo без SSR
+const TokenInfoWithNoSSR = dynamic(
+  () => import('../components/TokenInfo').then(mod => mod.default),
+  { ssr: false }
+);
+
 export default function Home() {
   return (
-    <main className="min-h-screen p-8">
-      <Suspense fallback={<div>Loading...</div>}>
+    <main className="min-h-screen p-1">
+      <Suspense fallback={<div>Загрузка...</div>}>
         <ClientWalletProviderWithNoSSR>
-          <MintPageWithNoSSR />
+          <div className="space-y-1">
+            <MintPageWithNoSSR />
+            <TokenInfoWithNoSSR />
+          </div>
         </ClientWalletProviderWithNoSSR>
       </Suspense>
     </main>

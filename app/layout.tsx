@@ -7,8 +7,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="ru">
+      <body className="p-1">
+        {children}
+      </body>
     </html>
   )
 }
