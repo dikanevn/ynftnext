@@ -21,7 +21,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 12px;
+  font-size: 8px;
   line-height: 1.2;
   border-radius: 0rem;
 }
@@ -29,13 +29,13 @@ body {
 button {
   border-radius: 0rem;
   padding: 0.25rem 0.5rem;
-  font-size: 12px;
+  font-size: 8px;
 }
 
 input {
   border-radius: 0rem;
   padding: 0.25rem;
-  font-size: 12px;
+  font-size: 8px;
 }
 
 h1 {

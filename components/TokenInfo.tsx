@@ -135,8 +135,7 @@ Master Edition PDA: ${masterEditionPda ? masterEditionPda.toString() : "не н�
   }, []);
 
   return (
-    <div className="p-8">
-      <h1 className="text-xl font-bold mb-4">Проверка информации о токене</h1>
+    <div className="p-3">
       <input
         type="text"
         placeholder="Введите адрес mint"

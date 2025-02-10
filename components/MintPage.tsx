@@ -97,7 +97,7 @@ export function MintPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-3">
       <WalletMultiButton className="rounded-none bg-purple-700 text-white shadow-xl" />
       {publicKey && (
         <div className="flex flex-col gap-4">
