@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   basePath: '/ynftnext',
   assetPrefix: '/ynftnext/',
-  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
@@ -12,11 +15,6 @@ const nextConfig = {
       crypto: require.resolve('crypto-browserify'),
       stream: require.resolve('stream-browserify'),
     };
-    config.module.rules.push({
-      test: /\.mjs$/,
-      include: /node_modules/,
-      type: 'javascript/auto',
-    });
     return config;
   },
   transpilePackages: [
@@ -25,7 +23,6 @@ const nextConfig = {
     '@solana/wallet-adapter-react',
     '@solana/wallet-adapter-wallets',
   ],
-  output: 'export',
 };
 
 module.exports = nextConfig; 

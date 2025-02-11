@@ -1,7 +1,7 @@
 'use client';
 
-import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 
 // Динамический импорт WalletProvider без SSR
 const ClientWalletProviderWithNoSSR = dynamic(
@@ -9,7 +9,7 @@ const ClientWalletProviderWithNoSSR = dynamic(
   { ssr: false }
 );
 
-// Динамический импорт MintPage без SSR
+// Динамический импорт MintPage без SSR aadf
 const MintPageWithNoSSR = dynamic(
   () => import('../components/MintPage').then(mod => mod.MintPage),
   { ssr: false }
@@ -34,4 +34,4 @@ export default function Home() {
       </Suspense>
     </main>
   );
-} 
+}
