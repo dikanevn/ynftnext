@@ -9,7 +9,7 @@ const ClientWalletProviderWithNoSSR = dynamic(
   { ssr: false }
 );
 
-// Динамический импорт MintPage без SSR asefasfas
+// Динамический импорт MintPage без SSR aadf
 const MintPageWithNoSSR = dynamic(
   () => import('../components/MintPage').then(mod => mod.MintPage),
   { ssr: false }
