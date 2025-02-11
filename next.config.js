@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: '/ynftnext',
+  assetPrefix: '/ynftnext/',
+  trailingSlash: true,
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
@@ -21,7 +24,8 @@ const nextConfig = {
     '@solana/wallet-adapter-base',
     '@solana/wallet-adapter-react',
     '@solana/wallet-adapter-wallets',
-  ]
-}
+  ],
+  output: 'export',
+};
 
 module.exports = nextConfig; 

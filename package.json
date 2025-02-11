@@ -2,14 +2,18 @@
   "name": "ynftnext",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dikanevn.github.io/ynftnext",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@metaplex-foundation/js": "^0.20.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.0.0",
     "@solana/spl-token": "^0.4.12",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
@@ -17,6 +21,7 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.98.0",
     "crypto-browserify": "^3.12.1",
+    "gh-pages": "^6.3.0",
     "js-sha256": "^0.11.0",
     "merkletreejs": "^0.4.1",
     "next": "15.1.6",
