@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { PublicKey } from '@solana/web3.js';
 
-// Добавляем константу для program id метаданных
-const TOKEN_METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+// Программа метаданных (metadata program id)
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+);
 
 // Функция для вычисления PDA метаданных
 function getMetadataPda(mint: PublicKey): PublicKey {
@@ -22,7 +24,7 @@ function getMetadataPda(mint: PublicKey): PublicKey {
 }
 
 // Функция для вычисления PDA мастер-издания
-function findMasterEditionPda(umi: any, { mint }: { mint: PublicKey }): PublicKey {
+function findMasterEditionPda(mint: PublicKey): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
     [
       Buffer.from("metadata"),
@@ -35,7 +37,7 @@ function findMasterEditionPda(umi: any, { mint }: { mint: PublicKey }): PublicKe
   return pda;
 }
 
-// Функция для получения данных цифрового актива (возвращает сырые данные аккаунта)
+// Функция для получения данных цифрового актива (сырые данные аккаунта)
 async function fetchDigitalAsset(umi: any, mint: PublicKey): Promise<any> {
   try {
     const metadataPda = getMetadataPda(mint);
@@ -49,7 +51,7 @@ async function fetchDigitalAsset(umi: any, mint: PublicKey): Promise<any> {
 export default function TokenInfo() {
   const [mintInput, setMintInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [metadataPda, setMetadataPda] = useState<string | null>(null);
+  const [metadataPdaStr, setMetadataPdaStr] = useState<string | null>(null);
 
   const getTokenInfo = async () => {
     if (!mintInput) {
@@ -62,20 +64,12 @@ export default function TokenInfo() {
       // Создаем UMI instance на devnet
       const umi = await createUmi("https://api.devnet.solana.com");
 
-      // Преобразуем строку mint в PublicKey из @solana/web3.js
+      // Преобразуем введенный mint в PublicKey
       const mintPk = new PublicKey(mintInput);
 
-      // Вычисляем PDA для метаданных с помощью новой функции
+      // Вычисляем PDA метаданных
       const pda = getMetadataPda(mintPk);
-      setMetadataPda(pda.toString());
-
-      // Вычисляем PDA для master edition (если применимо)
-      let masterEditionPda;
-      try {
-        masterEditionPda = findMasterEditionPda(umi, { mint: mintPk });
-      } catch (error) {
-        masterEditionPda = null;
-      }
+      setMetadataPdaStr(pda.toString());
 
       // Пытаемся получить данные цифрового актива
       let asset;
@@ -85,35 +79,36 @@ export default function TokenInfo() {
         asset = null;
       }
 
-      // Формируем текст для вывода
+      // Формируем сообщение с информацией
       let message = `Информация о токене:
 Mint: ${mintInput}
 Metadata PDA: ${pda.toString()}
-Master Edition PDA: ${masterEditionPda ? masterEditionPda.toString() : "не найден"}
+Master Edition PDA: ${(() => {
+  try {
+    return findMasterEditionPda(mintPk).toString();
+  } catch (e) {
+    return "не найден";
+  }
+})()}
 `;
 
       if (asset) {
-        message += `Детали цифрового актива: ${JSON.stringify(asset, null, 2)}`;
+        message += `\nДетали цифрового актива: ${JSON.stringify(asset, null, 2)}`;
       } else {
-        message += `Данных цифрового актива не получено.`;
+        message += `\nДанных цифрового актива не получено.`;
       }
 
-      // Выводим информацию в консоль
+      // Выводим информацию в консоль для отладки
       console.log("Информация о токене:");
       console.log("Mint:", mintInput);
       console.log("Metadata PDA:", pda.toString());
-      if (masterEditionPda) {
-        console.log("Master Edition PDA:", masterEditionPda.toString());
-      } else {
-        console.log("Master Edition PDA: не найден");
-      }
       if (asset) {
-        console.log("Детали цифрового актива:", asset);
+        console.dir(asset, { depth: null });
       } else {
         console.log("Данные цифрового актива не получены.");
       }
 
-      // Показать alert с информацией
+      // Отображаем alert с результатом
       alert(message);
     } catch (error) {
       console.error("Ошибка:", error);
@@ -123,18 +118,6 @@ Master Edition PDA: ${masterEditionPda ? masterEditionPda.toString() : "не н�
     }
   };
 
-  useEffect(() => {
-    try {
-      // Замените этот mint-адрес на действительный mint-адрес NFT
-      const mint = new PublicKey("YOUR_NFT_MINT_ADDRESS");
-      const pda = getMetadataPda(mint);
-      setMetadataPda(pda.toString());
-    } catch (error) {
-      console.error("Ошибка при вычислении PDA, проверьте mint-адрес:", error);
-      // Можно оставить значение metadataPda как null, пока не введут корректный адрес
-    }
-  }, []);
-
   return (
     <div className="p-3">
       <input
@@ -142,16 +125,16 @@ Master Edition PDA: ${masterEditionPda ? masterEditionPda.toString() : "не н�
         placeholder="Введите адрес mint"
         value={mintInput}
         onChange={(e) => setMintInput(e.target.value)}
-        className="px-3 py-2 border border-gray-300 mb-4 w-full text-black"
+        className="px-3 py-2 border border-gray-300 mb-4 w-full"
       />
-      <button
+      <button 
         onClick={getTokenInfo}
         disabled={loading}
         className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 disabled:bg-gray-400"
       >
         {loading ? 'Processing...' : 'Получить информацию'}
       </button>
-      {metadataPda && <p className="mt-4">Metadata PDA: {metadataPda}</p>}
+      {metadataPdaStr && <p className="mt-4">Metadata PDA: {metadataPdaStr}</p>}
     </div>
   );
 } 
