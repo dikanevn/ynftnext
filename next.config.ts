@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
     '@solana/wallet-adapter-base',
     '@solana/wallet-adapter-react',
     '@solana/wallet-adapter-wallets',
+    '@coral-xyz/anchor',
   ],
   output: 'export',
 };

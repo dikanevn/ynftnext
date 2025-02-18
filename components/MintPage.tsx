@@ -3,7 +3,7 @@
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useState } from 'react';
-import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { PublicKey, Transaction, TransactionInstruction, SystemProgram, LAMPORTS_PER_SOL, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import { Metaplex, walletAdapterIdentity } from '@metaplex-foundation/js';
 import { getAssociatedTokenAddress, createTransferCheckedInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { createTransferInstruction } from '@metaplex-foundation/mpl-token-metadata';
@@ -20,6 +20,7 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import { getMplTokenAuthRulesProgramId } from "@metaplex-foundation/mpl-candy-machine";
 import { findAssociatedTokenPda } from "@metaplex-foundation/mpl-toolbox";
+import * as anchor from '@coral-xyz/anchor';
 
 const RECIPIENT_ADDRESS = new PublicKey("3HE6EtGGxMRBuqqhz2gSs3TDRXebSc8HDDikZd1FYyJj");
 const TRANSFER_AMOUNT = 0.001 * LAMPORTS_PER_SOL; // 0.001 SOL в лампортах
@@ -198,6 +199,41 @@ export function MintPage() {
     }
   };
 
+  // Новая функция для создания SPL токена (без использования IDL)
+  const onCreateToken = async () => {
+    if (!publicKey || !signTransaction) {
+      alert("Пожалуйста, подключите кошелек!");
+      return;
+    }
+
+    // Создаем AnchorProvider для отправки транзакции
+    const provider = new anchor.AnchorProvider(connection, wallet, { preflightCommitment: 'processed' });
+
+    // Генерируем новую пару ключей для mint-аккаунта
+    const mintKeypair = anchor.web3.Keypair.generate();
+
+    // Дискриминатор для метода create_token (значения из IDL)
+    const discriminator = Buffer.from([84, 52, 204, 228, 24, 140, 234, 75]);
+
+    // Собираем вручную набор ключей в том же порядке, как определено в IDL
+    const ix = new TransactionInstruction({
+      keys: [
+        { pubkey: publicKey, isSigner: true, isWritable: true },
+        { pubkey: mintKeypair.publicKey, isSigner: true, isWritable: true },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+        { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
+      ],
+      programId: new PublicKey("2BESDrxqXxBWYwhiuzC4SgsoCmqoMiiEGwZ1en6gT4Se"),
+      data: discriminator,
+    });
+
+    const tx = new Transaction().add(ix);
+    await provider.sendAndConfirm(tx, [mintKeypair]);
+    console.log("SPL Token Address:", mintKeypair.publicKey.toString());
+    alert("SPL токен создан успешно!");
+  };
+
   return (
     <div className="p-3">
       <WalletMultiButton className="rounded-none bg-purple-700 text-white shadow-xl" />
@@ -216,6 +252,13 @@ export function MintPage() {
             className="px-4 py-2 bg-purple-500 text-white  hover:bg-purple-600 disabled:bg-gray-400"
           >
             {loading ? 'Creating pNFT...' : 'Create pNFT'}
+          </button>
+          <button 
+            onClick={onCreateToken} 
+            disabled={loading}
+            className="mt-5 px-4 py-2 bg-green-500 text-white hover:bg-green-600 disabled:bg-gray-400"
+          >
+            {loading ? 'Создание токена...' : 'Создать SPL токен'}
           </button>
           <div className="flex flex-col gap-2">
             <input 
