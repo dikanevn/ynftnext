@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 
 // Динамический импорт WalletProvider без SSR
@@ -9,29 +9,14 @@ const ClientWalletProviderWithNoSSR = dynamic(
   { ssr: false }
 );
 
-// Динамический импорт MintPage без SSR
-const MintPageWithNoSSR = dynamic(
-  () => import('../components/MintPage').then(mod => mod.MintPage),
-  { ssr: false }
-);
-
-// Динамический импорт TokenInfo без SSR
-const TokenInfoWithNoSSR = dynamic(
-  () => import('../components/TokenInfo').then(mod => mod.default),
-  { ssr: false }
-);
-
 export default function Home() {
   return (
     <main className="min-h-screen p-1">
-      <Suspense fallback={<div>Загрузка...</div>}>
-        <ClientWalletProviderWithNoSSR>
-          <div className="space-y-1">
-            <MintPageWithNoSSR />
-            <TokenInfoWithNoSSR />
-          </div>
-        </ClientWalletProviderWithNoSSR>
-      </Suspense>
+      <ClientWalletProviderWithNoSSR>
+        <div className="p-4 text-center">
+          <h1 className="text-2xl font-bold">Hello World!</h1>
+        </div>
+      </ClientWalletProviderWithNoSSR>
     </main>
   );
 } 
