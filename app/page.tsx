@@ -14,7 +14,7 @@ export default function Home() {
     <main className="min-h-screen p-1">
       <ClientWalletProviderWithNoSSR>
         <div className="p-4 text-center">
-          <h1 className="text-2xl font-bold">Hello World!</h1>
+          <h1 className="text-2xl font-bold">Hello World2!</h1>
         </div>
       </ClientWalletProviderWithNoSSR>
     </main>
